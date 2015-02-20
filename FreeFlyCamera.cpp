@@ -12,8 +12,8 @@ void FreeFlyCamera::update(const sf::Event& input, float timestep)
 	switch(input.type)
 	{
 		case sf::Event::MouseMoved :
-	_theta -= (input.mouseMove.y - 360) * _sensivity;
-	_phi -= (input.mouseMove.x - 640) * _sensivity;
+	_phi -= (input.mouseMove.y - 360) * _sensivity;
+	_theta -= (input.mouseMove.x - 640) * _sensivity;
 	VectorsFromAngles();
 	break;
 
@@ -52,21 +52,21 @@ void FreeFlyCamera::VectorsFromAngles()
   static const Vector3D up(0.f,0.f,1.f);
 
 
-    if(_theta > 89)
+    /*if(_theta > 89)
 	_theta = 89;
 	else if(_theta < -89)
 	_theta = -89 ;
-
-    /*
-     * if(_phi> 89)
+*/
+    
+      if(_phi> 89)
 	_phi = 89;
 	else if(_phi < -89)
 	 _phi = -89 ;
-	*/
+
     float r_temp = cos((_phi*M_PI)/180.f);
-    _forward.Z = r_temp*sin((_theta*M_PI)/180.f);
+    _forward.Z = sin((_phi*M_PI)/180.f);
     _forward.X = r_temp*cos((_theta*M_PI)/180.f);
-    _forward.Y = sin((_phi*M_PI)/180.f);
+    _forward.Y = r_temp*sin((_theta*M_PI)/180.f);
 
     _left = up.crossProduct(_forward);
     _left.normalize();
