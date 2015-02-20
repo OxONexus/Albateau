@@ -1,0 +1,8 @@
+-I
+-I/usr/include/qt5
+-I/usr/include/qt4
+-I/usr/include/GLES2
+-I/usr/include/GLES3
+-I/usr/include/GL
+-I/usr/include/SFML
+-I/usr/include/SFML/Graphics
