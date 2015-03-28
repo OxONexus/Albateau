@@ -5,15 +5,19 @@ FreeFlyCamera::FreeFlyCamera(const Vector3D & position)
 : _speed(0.2), _sensivity(0.05), _theta(0), _phi(0), _position(position)
 { VectorsFromAngles(); }
 
-
+void FreeFlyCamera::setWindowSize(int x,int y)
+{
+	windowX = x;
+	windowY = y;
+}
 void FreeFlyCamera::update(const sf::Event& input, float timestep)
 {
 
 	switch(input.type)
 	{
 		case sf::Event::MouseMoved :
-	_phi -= (input.mouseMove.y - 360) * _sensivity;
-	_theta -= (input.mouseMove.x - 640) * _sensivity;
+	_phi -= (input.mouseMove.y - 360 ) * _sensivity;
+	_theta -= (input.mouseMove.x -640) * _sensivity;	
 	VectorsFromAngles();
 	break;
 
@@ -38,29 +42,20 @@ void FreeFlyCamera::update(const sf::Event& input, float timestep)
 	_target = _position + _forward;
 		default:;
 	}
+	this->VectorsFromAngles();
 }
-
-void FreeFlyCamera::setPosition(const Vector3D & position)
+void FreeFlyCamera::setPosition(const  Vector3D &position)
 {
-_position = position;
-_target = _position + _forward;
+	_position = position ;
+	_target = _position + _forward ;
 }
-
 
 void FreeFlyCamera::VectorsFromAngles()
 {
-  static const Vector3D up(0.f,0.f,1.f);
-
-
-    /*if(_theta > 89)
-	_theta = 89;
-	else if(_theta < -89)
-	_theta = -89 ;
-*/
-    
-      if(_phi> 89)
-	_phi = 89;
-	else if(_phi < -89)
+	static const Vector3D up(0.f,0.f,1.f);
+	if(_phi>89)
+	 _phi = 89 ;
+	else if(_phi< -89)
 	 _phi = -89 ;
 
     float r_temp = cos((_phi*M_PI)/180.f);
@@ -81,7 +76,6 @@ void FreeFlyCamera::VectorsFromAngles()
   _target.X,_target.Y,_target.Z,
   0.f, 0.f, 1.f);
 }
-
 
 FreeFlyCamera::~FreeFlyCamera()
 {}

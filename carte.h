@@ -37,7 +37,6 @@ using namespace sf ;
 
 		private :
 		
-		FreeFlyCamera		 m_camera ;
 		std::vector<point>	 m_tableau;
 		std::ifstream 		 m_fichier;
 		unsigned int		 m_qualite;
@@ -45,4 +44,7 @@ using namespace sf ;
 	 	point 			 pt;
 		float			**tab;
 		sf::RenderWindow	&m_window;
+		FreeFlyCamera		m_camera ;
 	};
+
+GLuint chargerTexture(std::string fichier) ;

@@ -2,6 +2,23 @@
 #include "carte.h"
 
  using namespace std ;
+GLuint chargerTexture(string fichier) 
+
+{ 
+
+	   GLuint identifiant_texture = 0; 
+	   sf::Image Image; 
+	   if (!Image.loadFromFile(fichier)) 
+	   return EXIT_FAILURE; 
+           glGenTextures(1, &identifiant_texture); 
+           glBindTexture(GL_TEXTURE_2D, identifiant_texture); 
+           gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, Image.getSize().x, Image.getSize().y, GL_RGBA, GL_UNSIGNED_BYTE, Image.getPixelsPtr()); 
+           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
+           return identifiant_texture; 
+
+
+}
 
 Map::Map()
 {
@@ -22,7 +39,7 @@ Map::Map()
 	this->findMax();cout<<"find max done"<<endl;
 	this->createPoint();cout<<"create point done"<<endl;
 	this->remplissage();cout<<"remplissage done"<<endl;
-	this->afficherMapTerminal();cout<<"afficherMapTerminal done"<<endl;
+	//this->afficherMapTerminal();cout<<"afficherMapTerminal done"<<endl;
 
 	}
 }
@@ -48,7 +65,7 @@ Map::Map(int qualiter)
 	this->findMax();cout<<"find max done"<<endl;
 	this->createPoint();cout<<"create point done"<<endl;
 	this->remplissage();cout<<"remplissage done"<<endl;
-	this->afficherMapTerminal();cout<<"afficherMapTerminal done"<<endl;
+	//this->afficherMapTerminal();cout<<"afficherMapTerminal done"<<endl;
 }
 Map::Map(std::string file)
 {
@@ -72,7 +89,7 @@ Map::Map(std::string file)
 	this->findMax();cout<<"find max done"<<endl;
 	this->createPoint();cout<<"create point done"<<endl;
 	this->remplissage();cout<<"remplissage done"<<endl;
-	this->afficherMapTerminal();cout<<"afficherMapTerminal done"<<endl;
+	//this->afficherMapTerminal();cout<<"afficherMapTerminal done"<<endl;
 }
 void Map::setFile(string file)
 {
@@ -95,6 +112,7 @@ void Map::setQualiter(int qual)
 
 Map::Map(std::string file, unsigned int qualite,sf::RenderWindow &window):m_window(window)
 {
+	// yolo
 	m_qualite = qualite ;
         m_fichier.open(file.c_str());
 	tab = malloc(sizeof(float*)*m_qualite);
@@ -113,7 +131,7 @@ Map::Map(std::string file, unsigned int qualite,sf::RenderWindow &window):m_wind
 	 this->findMax();
 	 this->createPoint();
 	 this->remplissage();
-	 this->afficherMapTerminal();
+	 //this->afficherMapTerminal();
 }
 
 void Map::afficherMapTerminal()
@@ -243,8 +261,16 @@ void Map::loop()
 	int	     		x;
 	int			y;
 	int		     	z;
+	GLuint 			txHerbe;
 
+
+//	txHerbe.setRepeated(true);
+//	txHerbe.loadFromFile("image/herbe.jpeg");
+//	sf::Texture::bind(&txHerbe);
+//	txHerbe = chargerTexture("image/fleche.png");
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(70,(double)1280/720,1,1000);
@@ -262,15 +288,19 @@ void Map::loop()
           			case sf::Event::KeyPressed :
           				if(event.key.code == sf::Keyboard::Escape)
           					{
-          					running=0;
+          					running=false;
           					}
+        		    	m_camera.update(event,10);
           			break;
+
+				case sf::Event::MouseMoved:
+				m_camera.update(event,10);
+				break;
+
           			default:;
           		}
-        		    m_camera.update(event,10);
           }
-
-		sf::Mouse::setPosition(sf::Vector2i(1280/2,720/2),m_window);
+				sf::Mouse::setPosition(sf::Vector2i(640,360),m_window);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
@@ -281,7 +311,7 @@ void Map::loop()
 	{
 		for(int z =0; z<7; ++z)
 		{
-			if(a==3 && z ==3 )
+			if(a==3 && z ==3 ) // affichage de la carte
 			{
 				for(int i = 0; i< m_qualite-1 ; ++i)
 				{
@@ -299,7 +329,64 @@ void Map::loop()
 					glEnd();
 					}
 				}
-			}
+
+				for(int u = 0; u< m_qualite-1; ++u)
+				{
+				glBegin(GL_TRIANGLE_FAN);
+				glVertex3d((3*m_qualite)+u,(3*m_qualite),0);
+				glVertex3d((3*m_qualite)+u+1,(3*m_qualite),0);
+				glVertex3d((3*m_qualite)+u+1,(3*m_qualite),-tab[u+1][0]/100);
+				glVertex3d((3*m_qualite)+u,(3*m_qualite),-tab[u][0]/100);
+				glEnd();
+				}
+
+				for(u = 0; u< m_qualite-1; ++u)
+				{
+				glBegin(GL_TRIANGLE_FAN);
+				glVertex3d((3*m_qualite)+u,(4*m_qualite)-1,0);
+				glVertex3d((3*m_qualite)+u+1,(4*m_qualite)-1,0);
+				glVertex3d((3*m_qualite)+u+1,(4*m_qualite)-1,-tab[u+1][m_qualite-1]/100);
+				glVertex3d((3*m_qualite)+u,(4*m_qualite)-1,-tab[u][m_qualite-1]/100);
+				glEnd();
+				}
+
+				for(int v = 0; v< m_qualite-1; ++v)
+				{
+				glBegin(GL_TRIANGLE_FAN);
+				glVertex3d((3*m_qualite),(3*m_qualite)+v,0);
+				glVertex3d((3*m_qualite),(3*m_qualite)+v+1,0);
+				glVertex3d((3*m_qualite),(3*m_qualite)+v+1,-tab[0][v+1]/100);
+				glVertex3d((3*m_qualite),(3*m_qualite)+v,-tab[0][v]/100);
+				glEnd();
+				}
+
+				for(int v = 0; v< m_qualite-1; ++v)
+				{
+				glBegin(GL_TRIANGLE_FAN);
+				glVertex3d((4*m_qualite)-1,(3*m_qualite)+v,0);
+				glVertex3d((4*m_qualite)-1,(3*m_qualite)+v+1,0);
+				glVertex3d((4*m_qualite)-1,(3*m_qualite)+v+1,-tab[m_qualite-1][v+1]/100);
+				glVertex3d((4*m_qualite)-1,(3*m_qualite)+v,-tab[m_qualite-1][v]/100);
+				glEnd();
+				}
+    			
+				glColor3ub(222,222,222);
+
+				glBegin(GL_QUADS);
+				glVertex3d((4*m_qualite),(4*m_qualite)-1,0);
+				glVertex3d((4*m_qualite),(4*m_qualite),0);
+				glVertex3d((3*m_qualite),(4*m_qualite),0);
+				glVertex3d((3*m_qualite),(4*m_qualite)-1,0);
+				glEnd();
+
+				glBegin(GL_QUADS);
+				glVertex3d((4*m_qualite)-1,(4*m_qualite),0);
+				glVertex3d((4*m_qualite),(4*m_qualite),0);
+				glVertex3d((4*m_qualite),(3*m_qualite),0);
+				glVertex3d((4*m_qualite)-1,(3*m_qualite),0);
+				glEnd();
+
+			} // fin affichage de la carte 
 
 			else
       		{
@@ -314,41 +401,16 @@ void Map::loop()
     		}
 		 }
     }
-
-		// COntour de l'etang a ameliorer 
-		// cree des trangle et ameliorer a couleur 
+		//last edit 
+/*		glBindTexture(GL_TEXTURE_2D,txHerbe);
 		glBegin(GL_QUADS);
-		glColor3ub(255,0,0);
-		glVertex3d(3*m_qualite,3*m_qualite,0);
-		glVertex3d(3*m_qualite,4*m_qualite,0);
-		glVertex3d(3*m_qualite,4*m_qualite,-m_max.z/100);
-		glVertex3d(3*m_qualite,3*m_qualite,-m_max.z/100);
+		glTexCoord2d(0,1); glVertex3d(0,0,0);
+		glTexCoord2d(0,0); glVertex3d(1,0,0);
+		glTexCoord2d(1,1); glVertex3d(1,1,0);
+		glTexCoord2d(1,1); glVertex3d(0,1,0);
 		glEnd();
 
-		glBegin(GL_QUADS);
-		glColor3ub(255,0,0);
-		glVertex3d(3*m_qualite,3*m_qualite,0);
-		glVertex3d(4*m_qualite,3*m_qualite,0);
-		glVertex3d(4*m_qualite,3*m_qualite,-m_max.z/100);
-		glVertex3d(3*m_qualite,3*m_qualite,-m_max.z/100);
-
-		glBegin(GL_QUADS);
-		glColor3ub(255,0,0);
-		glVertex3d(4*m_qualite,3*m_qualite,0);
-		glVertex3d(4*m_qualite,4*m_qualite,0);
-		glVertex3d(4*m_qualite,4*m_qualite,-m_max.z/100);
-		glVertex3d(4*m_qualite,3*m_qualite,-m_max.z/100);
-		glEnd();
-		
-		glBegin(GL_QUADS);
-		glColor3ub(255,0,0);
-		glVertex3d(4*m_qualite,4*m_qualite,0);
-		glVertex3d(3*m_qualite,4*m_qualite,0);
-		glVertex3d(3*m_qualite,4*m_qualite,-m_max.z/100);
-		glVertex3d(4*m_qualite,4*m_qualite,-m_max.z/100);
-		glEnd();
-		
-		glFlush();
+*/		glFlush();
 	       	m_window.display();
   }
 }

@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <GL/glu.h>
+#include <iostream>
 
 
 class FreeFlyCamera
@@ -18,7 +19,7 @@ public:
     inline void setSpeed(const float& speed) { _speed = speed; }
     inline void setSensivity(const float& sensivity) { _sensivity = sensivity; }
     void setPosition(const Vector3D & position);
-
+	void setWindowSize(int x, int y);
     void look();
 
 private:
@@ -30,6 +31,8 @@ private:
     Vector3D _target;
     Vector3D _forward;
     Vector3D _left;
+    int windowX;
+    int windowY;
 
     void VectorsFromAngles();
 //void Init();

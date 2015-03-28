@@ -8,20 +8,28 @@
 #include <QApplication>
 #define HAUTEUR 720
 #define LARGEUR 1280
+// cree les mask
+// gere le redimensionnement
+// gere les clique 
+// afficher un HUD dans opengl 
 
 using namespace std ;
 
 int main(int argc, char *argv[])
 {
-	// Variable
-    	sf::RenderWindow window(sf::VideoMode(LARGEUR,HAUTEUR), "Albateau, Carte du fond",sf::Style::Resize, sf::ContextSettings(32));
+	
+	sf::ContextSettings setting ;
+	setting.antialiasingLevel = 8;
+	setting.depthBits = 32;
+
+    	sf::RenderWindow window(sf::VideoMode(LARGEUR,HAUTEUR), "Albateau, Carte du fond",sf::Style::Resize,setting); 
 	QApplication app(argc,argv);
 	
 
 
-	Map		 map("MapSimuler.csv",40,window);
+	Map map("MapSimuler.csv",50,window);
 	sf::Event	 event ;
-	sf::Texture	 fond;
+	sf::Texture 	 fond;
 	sf::Texture	 imgfleche ;
 	sf::Sprite	 menu ;
 	sf::Sprite	 fleche ;
@@ -29,25 +37,23 @@ int main(int argc, char *argv[])
 	MaFenetre	 fenetre;
 
 	int		 positionChoix = 2 ;
-	QString 	 path= NULL;
+	QString 	 path;
 
 	menu.setPosition(0,0);
 	fleche.setPosition(0,0);
+	window.setMouseCursorVisible(true);
 	window.setFramerateLimit(60);
-	window.setMouseCursorVisible(false);
 	window.setVerticalSyncEnabled(true);
 	
-	int x(100), y( 100) ;
-	// Initialisation
+	int 	x = 485;
+	int 	y = 190;
+	int 	posMouseX;
+	int 	posMouseY;
 
-	if(fond.loadFromFile("image/fond.png")!=1 ) 
-{ 
-cout << "Erreur lors du chargement du fond "<< endl  ;
-}
-	else if(imgfleche.loadFromFile("image/fleche.png")!=1) 
-{
- cout << "Erreur lors du chargement de la fleche"<< endl  ;
-}
+	fond.loadFromFile("image/fond.png");
+	imgfleche.loadFromFile("image/fleche.png"); 
+
+	
 	menu.setTexture(fond);
 	fleche.setTexture(imgfleche);
 	window.setVerticalSyncEnabled(true);
@@ -70,11 +76,60 @@ cout << "Erreur lors du chargement du fond "<< endl  ;
 		case sf::Event::Resized:
 		window.setView(sf::View(sf::FloatRect(0,0, event.size.width , event.size.height)));
 		break ;
+
+		case sf::Event::MouseMoved:
+		posMouseX = event.mouseMove.x ;
+		posMouseY = event.mouseMove.y ;
+		std::cout<<"x : " << posMouseX << std::endl ;
+		std::cout<<"y : " << posMouseY << std::endl ;
+		break;
+
+		case sf::Event::MouseButtonPressed:
+		std::cout << " bouton presser a -> x : " << posMouseX << " y : " << posMouseY << std::endl;
+
+			if(posMouseX > 510 && posMouseX < 770
+			&& posMouseY > 230 && posMouseY < 275)
+			{
+				path = fenetre.ouvrirDialogue();
+			}
+
+			else if(posMouseX > 510 && posMouseX < 770
+			&& posMouseY > 320 && posMouseY < 360)
+			{
+					if(path == 0)
+					{path = fenetre.ouvrirDialogue();}
+					map.setFile(path.toStdString());
+					map.loadFromFile();
+					window.pushGLStates();
+					window.setMouseCursorVisible(false);
+				//	window.popGLStates();
+					map.loop();
+				//	window.setMouseCursorVisible(true);
+					window.resetGLStates();
+			}
+
+			else if(posMouseX > 510 && posMouseX < 770
+			&& posMouseY > 400 && posMouseY < 450)
+			{
+					window.setMouseCursorVisible(false);
+					map.loop();
+					window.setMouseCursorVisible(true);
+					window.resetGLStates();
+			}
+
+			/*else if(posMouseX > 510 && posMouseX < 770
+			&& posMouseY > 230 && posMouseY < 275)
+			{
+				path = fenetre.ouvrirDialogue();
+			}*/
+
+		break;
+
 		case sf::Event::KeyPressed:
 		   
 			switch(event.key.code) 
 			{
-			
+
 			case sf::Keyboard::Up :
 			positionChoix --;
 			if(positionChoix<1)
@@ -87,14 +142,6 @@ cout << "Erreur lors du chargement du fond "<< endl  ;
 			{positionChoix=4;}
 			break;
 
-			case sf::Keyboard::Left :
-
-			break;
-
-			case sf::Keyboard::Right :
-
-			break;
-
 			case sf::Keyboard::Escape :
 			running = false ;
 			break;
@@ -103,21 +150,26 @@ cout << "Erreur lors du chargement du fond "<< endl  ;
 				switch(positionChoix)
 				{
 					case 1:
-					path = fenetre.ouvrirDialogue();
-					break;
-					
-					case 2:
 					if(path == 0)
 					{path = fenetre.ouvrirDialogue();}
 					map.setFile(path.toStdString());
 					map.loadFromFile();
+					window.setMouseCursorVisible(false);
 					map.loop();
+					window.setMouseCursorVisible(true);
 					window.resetGLStates();
+					break;
+					
+					case 2:
+					path = fenetre.ouvrirDialogue();
 					break;
 
 					case 3:
-					map.loop();
-					window.resetGLStates();
+
+					break;
+
+					case 4:
+					running = false ;
 					break;
 					
 					default:;
@@ -136,23 +188,23 @@ cout << "Erreur lors du chargement du fond "<< endl  ;
 	switch(positionChoix)
 	{
 		case 1 :
-		y = 100 ;
+		y = 185 ;
 		break ;
 
 		case 2 : 
-		y = 200 ;
+		y = 245 ;
 		break;
 
 		case 3:
-		y = 300 ;
+		y = 310 ;
 		break ; 
 
 		case 4: 
-		y = 400 ;
+		y = 380 ;
 		break;
 
 		default:
-		y = 100 ; 
+		y = 190 ; 
 		break;;
 	}
 
@@ -164,6 +216,6 @@ cout << "Erreur lors du chargement du fond "<< endl  ;
 	window.display();	
     }
 	window.close();
-	
-    return 0;
+	return 0;
+
 }

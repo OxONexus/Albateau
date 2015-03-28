@@ -5,9 +5,8 @@
    
 #include <QApplication>
 #include <QWidget>
-#include <QPushButton>
-#include <QMessageBox>
 #include <QFileDialog>
+#include <QMessageBox>
 
     class MaFenetre : public QWidget
     {
@@ -16,9 +15,6 @@
              public:
              MaFenetre();
              QString ouvrirDialogue();
-                    
-             private:
-             QPushButton *m_boutonDialogue;
      };
                               
 #endif
