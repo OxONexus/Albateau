@@ -23,44 +23,15 @@ GLuint chargerTexture(string fichier)
 Map::Map()
 {
 	m_qualite = 100;
-	tab = malloc(sizeof(float*)*m_qualite);
-	for(unsigned int i = 0 ; i< m_qualite ; ++i)
-	{
-		tab[i] =  malloc(sizeof(float)*m_qualite);
-	}
-
-	for(int y = 0; y<m_qualite; ++y)
-	{
-	for(int z = 0; z<m_qualite; ++z)
-	{
-		tab[y][z] = 0;
-	}
 	this->loadFromFile();cout<<"load file done"<<endl;
 	this->findMax();cout<<"find max done"<<endl;
 	this->createPoint();cout<<"create point done"<<endl;
 	this->remplissage();cout<<"remplissage done"<<endl;
 	//this->afficherMapTerminal();cout<<"afficherMapTerminal done"<<endl;
-
-	}
 }
 Map::Map(int qualiter)
 {
 	m_qualite = qualiter ;
-
-	tab = malloc(sizeof(float*)*m_qualite);
-	for(unsigned int i = 0 ; i< m_qualite ; ++i)
-	{
-		tab[i] =  malloc(sizeof(float)*m_qualite);
-	}
-
-	for(int y = 0; y<m_qualite; ++y)
-	{
-	for(int z = 0; z<m_qualite; ++z)
-	{
-		tab[y][z] = 0;
-	}
-
-	}
 	this->loadFromFile();cout<<"load file done"<<endl;
 	this->findMax();cout<<"find max done"<<endl;
 	this->createPoint();cout<<"create point done"<<endl;
@@ -71,22 +42,6 @@ Map::Map(std::string file)
 {
 	m_fichier.open(file.c_str());
 	m_qualite = 100 ;
-	tab = malloc(sizeof(float*)*m_qualite);
-	for(unsigned int i = 0 ; i< m_qualite ; ++i)
-	{
-		tab[i] =  malloc(sizeof(float)*m_qualite);
-	}
-
-	for(int y = 0; y<m_qualite; ++y)
-	{
-	for(int z = 0; z<m_qualite; ++z)
-	{
-		tab[y][z] = 0;
-	}
-
-	}
-	this->loadFromFile();cout<<"load file done"<<endl;
-	this->findMax();cout<<"find max done"<<endl;
 	this->createPoint();cout<<"create point done"<<endl;
 	this->remplissage();cout<<"remplissage done"<<endl;
 	//this->afficherMapTerminal();cout<<"afficherMapTerminal done"<<endl;
@@ -115,18 +70,6 @@ Map::Map(std::string file, unsigned int qualite,sf::RenderWindow &window):m_wind
 	// yolo
 	m_qualite = qualite ;
         m_fichier.open(file.c_str());
-	tab = malloc(sizeof(float*)*m_qualite);
-        for(unsigned int i = 0 ; i< m_qualite ; ++i)
-	        {
-       		  tab[i] =  malloc(sizeof(float)*m_qualite);
-       		}
-       for(int y = 0; y<m_qualite; ++y)
-      	 {
-      		 for(int z = 0; z<m_qualite; ++z)
-      		 {
-        	        tab[y][z] = 0;
-       		 }
-      	}
 	 this->loadFromFile();
 	 this->findMax();
 	 this->createPoint();
@@ -139,7 +82,7 @@ void Map::afficherMapTerminal()
 
 for(int i = 0 ; i < m_qualite; ++i)
 	{
-		for(int y = 0 ; y < m_qualite; ++y)
+		for(int y = 0 ; y < m_qualite/ratioCarte; ++y)
 		{
 		cout<<tab[i][y]<<" ";
 		}
@@ -149,11 +92,11 @@ for(int i = 0 ; i < m_qualite; ++i)
 
 void Map::remplissage()
 {
-	float a,b,c;
+/*	float a,b,c;
 	for(int i = 0 ; i<m_qualite ; ++i)
 	{
 
-		for(int y = 0; y<m_qualite ; ++y)
+		for(int y = 0; y<m_qualite/ratioCarte ; ++y)
 		{
 
 			if(i>2&&i<(m_qualite-2)&&y>2&&y<(m_qualite-2))
@@ -163,7 +106,7 @@ void Map::remplissage()
 			b = (tab[i+2][y]+tab[i-2][y]+tab[i][y+2]+tab[i][y-2])/4 ;
 			c = (2*a + b)/3;
 			tab[i][y] = c ;
-			}}/*
+			}}
 
 			else if(i>1&&i<(m_qualite-1)&&y>1&&y<(m_qualite-1))
 			{
@@ -194,19 +137,14 @@ void Map::remplissage()
 
 			}
 
-			else*/
+			else
 		}
-	}
+	}*/
 }
 
 Map::~Map()
 {
 	m_fichier.close();
-	for(unsigned int i = 0 ; i< m_qualite ; ++i)
-	{
-		free(tab[i]);
-	}
-	free(tab);
 }
 
 unsigned int Map::loadFromFile()
@@ -235,12 +173,24 @@ void Map::findMax()
 	if(m_tableau[i].z> m_max.z){m_max.z= m_tableau[i].z;}
 
 	}
-}
 
+	ratioCarte = float(m_max.x/m_max.y);
+	
+	std::vector<float> vide(2+(m_qualite/ratioCarte),0) ;	
+	
+	for(int x = 0 ; x < m_qualite+2 ;  ++x)
+	{
+		tab.push_back(vide);
+	}
+	 
+}
 void Map::createPoint()
 {
+
 	float coefx =float(m_qualite)/float(m_max.x);
-	float coefy = float(m_qualite)/(m_max.y);
+	float coefy = (float(m_qualite/ratioCarte)/(m_max.y)) ;
+	
+
 	int tabx, taby ;
 	for(unsigned int i = 0; i< m_tableau.size(); ++i)
 	{
@@ -248,10 +198,10 @@ void Map::createPoint()
 	tabx = (int)(m_tableau[i].x * coefx) ;
 	taby = (int)(m_tableau[i].y * coefy) ;
 	if(tabx>m_qualite-1){tabx=m_qualite-1;}
-	if(taby>m_qualite-1){taby=m_qualite-1;}
-	tab[tabx][taby] = m_tableau[i].z ;
+	if(taby>(m_qualite/ratioCarte)-1){taby=(m_qualite/ratioCarte)-1;}
+	tab[1+tabx][1+taby] = m_tableau[i].z ;
 	}
-
+	
 }
 
 void Map::loop()
@@ -262,9 +212,12 @@ void Map::loop()
 	int			y;
 	int		     	z;
 	GLuint 			txHerbe;
+	GLuint			skybox[6] ;
 
+				glEnable(GL_TEXTURE_2D);
+				txHerbe = chargerTexture("image/herbe.jpg");
+				glDisable(GL_TEXTURE_2D);
 
-	txHerbe = chargerTexture("image/herbe.jpg");
 	glEnable(GL_DEPTH_TEST);
 	 
 	glMatrixMode(GL_PROJECTION);
@@ -303,113 +256,67 @@ void Map::loop()
 	glLoadIdentity();
 	m_camera.look();
 
-	for(int a = 0; a<7; ++a)
-	{
-		for(int z =0; z<7; ++z)
-		{
-			if(a==3 && z ==3 ) // affichage de la carte
-			{
-				for(int i = 0; i< m_qualite-1 ; ++i)
+				for(int i = 0; i< tab.size()-1 ; ++i)
 				{
-					for(int y= 0; y < m_qualite-1 ; ++y )
+					for(int y= 0; y < tab[y].size()-1 ; ++y )
 					{
 					glBegin(GL_TRIANGLE_FAN);
-					glColor3ub((tab[i][y]/1000)*255,0,0);
-					glVertex3d((3*m_qualite)+i,(3*m_qualite)+y,-tab[i][y]/100);
-					glColor3ub((tab[i+1][y]/1000)*255,0,0);
-					glVertex3d((3*m_qualite)+i+1,(3*m_qualite)+y,-tab[i+1][y]/100);
-					glColor3ub((tab[i+1][y+1]/1000)*255,0,0);
-					glVertex3d((3*m_qualite)+i+1,(3*m_qualite)+y+1,-tab[i+1][y+1]/100);
-					glColor3ub((tab[i][y+1]/1000)*255,0,0);
-					glVertex3d((3*m_qualite)+i,(3*m_qualite)+y+1,-tab[i][y+1]/100);
+					glColor3ub((tab[i][y]/m_max.z)*200,(tab[i][y]/m_max.z)*200,(tab[i][y]/m_max.z)*200);
+					glVertex3d(i,y,-tab[i][y]/10);
+					glColor3ub((tab[i+1][y]/m_max.z)*25,(tab[i+1][y]/m_max.z)*255,(tab[i+1][y]/m_max.z)*255);
+					glVertex3d(i+1,y,-tab[i+1][y]/10);
+					glColor3ub((tab[i+1][y+1]/m_max.z)*55,(tab[i+1][y+1]/m_max.z)*255,(tab[i+1][y+1]/m_max.z)*255);
+					glVertex3d(i+1,y+1,-tab[i+1][y+1]/10);
+					glColor3ub((tab[i][y+1]/m_max.z)*25,(tab[i][y+1]/m_max.z)*255,(tab[i][y+1]/m_max.z)*255);
+					glVertex3d(i,y+1,-tab[i][y+1]/10);
 					glEnd();
 					}
 				}
+				
+				
 
-				for(int u = 0; u< m_qualite-1; ++u)
-				{
-				glBegin(GL_TRIANGLE_FAN);
-				glVertex3d((3*m_qualite)+u,(3*m_qualite),0);
-				glVertex3d((3*m_qualite)+u+1,(3*m_qualite),0);
-				glVertex3d((3*m_qualite)+u+1,(3*m_qualite),-tab[u+1][0]/100);
-				glVertex3d((3*m_qualite)+u,(3*m_qualite),-tab[u][0]/100);
-				glEnd();
-				}
+				glBegin(GL_QUADS);
+				glColor3ub(0,255,255);
+				glVertex3d(-200,0,0);
+				glVertex3d(200+tab.size(),0,0);
+				glVertex3d(200+tab.size(),-200,0);
+				glVertex3d(-200,-200,0);
 
-				for(u = 0; u< m_qualite-1; ++u)
-				{
-				glBegin(GL_TRIANGLE_FAN);
-				glVertex3d((3*m_qualite)+u,(4*m_qualite)-1,0);
-				glVertex3d((3*m_qualite)+u+1,(4*m_qualite)-1,0);
-				glVertex3d((3*m_qualite)+u+1,(4*m_qualite)-1,-tab[u+1][m_qualite-1]/100);
-				glVertex3d((3*m_qualite)+u,(4*m_qualite)-1,-tab[u][m_qualite-1]/100);
-				glEnd();
-				}
+				glVertex3d(-200,0,0);
+				glVertex3d(-200,200+tab[1].size(),0);
+				glVertex3d(0,200+tab[1].size(),0);
+				glVertex3d(0,0,0);
 
-				for(int v = 0; v< m_qualite-1; ++v)
-				{
-				glBegin(GL_TRIANGLE_FAN);
-				glVertex3d((3*m_qualite),(3*m_qualite)+v,0);
-				glVertex3d((3*m_qualite),(3*m_qualite)+v+1,0);
-				glVertex3d((3*m_qualite),(3*m_qualite)+v+1,-tab[0][v+1]/100);
-				glVertex3d((3*m_qualite),(3*m_qualite)+v,-tab[0][v]/100);
-				glEnd();
-				}
+				glVertex3d(0,tab[1].size()-1,0);
+				glVertex3d(0,tab[1].size()+200,0);
+				glVertex3d(tab.size()+200,tab[1].size()+200,0);
+				glVertex3d(tab.size()+200,tab[1].size()-1,0);
 
-				for(int v = 0; v< m_qualite-1; ++v)
-				{
-				glBegin(GL_TRIANGLE_FAN);
-				glVertex3d((4*m_qualite)-1,(3*m_qualite)+v,0);
-				glVertex3d((4*m_qualite)-1,(3*m_qualite)+v+1,0);
-				glVertex3d((4*m_qualite)-1,(3*m_qualite)+v+1,-tab[m_qualite-1][v+1]/100);
-				glVertex3d((4*m_qualite)-1,(3*m_qualite)+v,-tab[m_qualite-1][v]/100);
-				glEnd();
-				}
+
+				glVertex3d(tab.size()+200,tab[1].size(),0);
+				glVertex3d(tab.size()+200,0,0);
+				glVertex3d(tab.size(),0,0);
+				glVertex3d(tab.size(),tab.size(),0);
+				glEnd(); 
+				
+				/*glEnable(GL_TEXTURE_2D);
+				glDisable(GL_DEPTH_TEST);
+				glDisable(GL_BLEND);
+				glDisable(GL_LIGHTING);
+				skybox[0] = chargerTexture("image/back.jpg");
+				skybox[1] = chargerTexture("image/front.jpg");
+				skybox[2] = chargerTexture("image/top.jpg");
+				skybox[3] = chargerTexture("image/left.jpg");
+				skybox[4] = chargerTexture("image/right.jpg");
+				
+				glBindTexture(GL_TEXTURE_2D,skybox[1]); //front
+				glBegin(GL_QUADS);
+				glTexCoord2f(0,0); glVertex3d( 0.5f,-0.5f,-0.5f);
+				glTexCoord2f(1,0); glVertex3d( -0.5f,-0.5f,-0.5f);
+				glTexCoord2f(1,1); glVertex3d( -0.5f,0.5f,-0.5f);
+				glTexCoord2f(0,1); glVertex3d( 0.5f,0.5f,-0.5f);
+				glEnd(); */
     			
-				glColor3ub(222,222,222);
-
-				glBegin(GL_QUADS);
-				glVertex3d((4*m_qualite),(4*m_qualite)-1,0);
-				glVertex3d((4*m_qualite),(4*m_qualite),0);
-				glVertex3d((3*m_qualite),(4*m_qualite),0);
-				glVertex3d((3*m_qualite),(4*m_qualite)-1,0);
-				glEnd();
-
-				glBegin(GL_QUADS);
-				glVertex3d((4*m_qualite)-1,(4*m_qualite),0);
-				glVertex3d((4*m_qualite),(4*m_qualite),0);
-				glVertex3d((4*m_qualite),(3*m_qualite),0);
-				glVertex3d((4*m_qualite)-1,(3*m_qualite),0);
-				glEnd();
-
-			} // fin affichage de la carte 
-
-			else
-      		{
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D,txHerbe);
-    			glBegin(GL_QUADS);
-    			glColor3ub(222,222,222);
-    			glVertex3d(a*m_qualite,z*m_qualite,0);glTexCoord2d(0,0);
-    			glVertex3d((a+1)*m_qualite,z*m_qualite,0);glTexCoord2d(200,0);
-    			glVertex3d((a+1)*m_qualite,(z+1)*m_qualite,0);glTexCoord2d(200,200);
-    			glVertex3d(a*m_qualite,(z+1)*m_qualite,0);glTexCoord2d(0,200);
-    			glEnd();
-
-    		}
-	}
-    }
-		//last edit 
-		glBindTexture(GL_TEXTURE_2D,txHerbe);
-		glBegin(GL_QUADS);
-		glTexCoord2d(1,1); glVertex3d(0,0,0);
-		glTexCoord2d(1,0); glVertex3d(-1,0,0);
-		glTexCoord2d(0,0); glVertex3d(-1,-1,0);
-		glTexCoord2d(0,1); glVertex3d(0,-1,0);
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
-
-
 		glFlush();
 	       	m_window.display();
   }
