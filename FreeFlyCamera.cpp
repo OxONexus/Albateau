@@ -2,7 +2,7 @@
 
 
 FreeFlyCamera::FreeFlyCamera(const Vector3D & position)
-: _speed(0.2), _sensivity(0.05), _theta(0), _phi(0), _position(position)
+: _speed(0.08), _sensivity(0.05), _theta(0), _phi(0), _position(position)
 { VectorsFromAngles(); }
 
 void FreeFlyCamera::setWindowSize(int x,int y)

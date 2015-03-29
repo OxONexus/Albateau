@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 	MaFenetre	 fenetre;
 
 	int		 positionChoix = 2 ;
-	QString 	 path;
+	QString 	 path = "MapSimuler.csv" ;
 
 	menu.setPosition(0,0);
 	fleche.setPosition(0,0);

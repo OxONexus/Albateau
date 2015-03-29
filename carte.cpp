@@ -264,13 +264,9 @@ void Map::loop()
 	GLuint 			txHerbe;
 
 
-//	txHerbe.setRepeated(true);
-//	txHerbe.loadFromFile("image/herbe.jpeg");
-//	sf::Texture::bind(&txHerbe);
-//	txHerbe = chargerTexture("image/fleche.png");
+	txHerbe = chargerTexture("image/herbe.jpg");
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
-
+	 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(70,(double)1280/720,1,1000);
@@ -390,27 +386,31 @@ void Map::loop()
 
 			else
       		{
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D,txHerbe);
     			glBegin(GL_QUADS);
     			glColor3ub(222,222,222);
-    			glVertex3d(a*m_qualite,z*m_qualite,0);
-    			glVertex3d((a+1)*m_qualite,z*m_qualite,0);
-    			glVertex3d((a+1)*m_qualite,(z+1)*m_qualite,0);
-    			glVertex3d(a*m_qualite,(z+1)*m_qualite,0);
+    			glVertex3d(a*m_qualite,z*m_qualite,0);glTexCoord2d(0,0);
+    			glVertex3d((a+1)*m_qualite,z*m_qualite,0);glTexCoord2d(200,0);
+    			glVertex3d((a+1)*m_qualite,(z+1)*m_qualite,0);glTexCoord2d(200,200);
+    			glVertex3d(a*m_qualite,(z+1)*m_qualite,0);glTexCoord2d(0,200);
     			glEnd();
 
     		}
-		 }
+	}
     }
 		//last edit 
-/*		glBindTexture(GL_TEXTURE_2D,txHerbe);
+		glBindTexture(GL_TEXTURE_2D,txHerbe);
 		glBegin(GL_QUADS);
-		glTexCoord2d(0,1); glVertex3d(0,0,0);
-		glTexCoord2d(0,0); glVertex3d(1,0,0);
-		glTexCoord2d(1,1); glVertex3d(1,1,0);
-		glTexCoord2d(1,1); glVertex3d(0,1,0);
+		glTexCoord2d(1,1); glVertex3d(0,0,0);
+		glTexCoord2d(1,0); glVertex3d(-1,0,0);
+		glTexCoord2d(0,0); glVertex3d(-1,-1,0);
+		glTexCoord2d(0,1); glVertex3d(0,-1,0);
 		glEnd();
+		glDisable(GL_TEXTURE_2D);
 
-*/		glFlush();
+
+		glFlush();
 	       	m_window.display();
   }
 }
