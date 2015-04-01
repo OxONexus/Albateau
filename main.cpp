@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	
 
 
-	Map map("MapSimuler.csv",100,window);
+	Map map("MapSimuler.csv",200,window);
 	sf::Event	 event ;
 	sf::Texture 	 fond;
 	sf::Texture	 imgfleche ;

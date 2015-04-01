@@ -211,13 +211,13 @@ void Map::loop()
 	int	     		x;
 	int			y;
 	int		     	z;
+	int 			ratioTexHerbeX;
+	int 			ratioTexHerbeY;
 	GLuint 			txHerbe;
 	GLuint			skybox[6] ;
 
-				glEnable(GL_TEXTURE_2D);
-				txHerbe = chargerTexture("image/herbe.jpg");
-				glDisable(GL_TEXTURE_2D);
 
+	txHerbe = chargerTexture("image/herbe.jpg");
 	glEnable(GL_DEPTH_TEST);
 	 
 	glMatrixMode(GL_PROJECTION);
@@ -256,49 +256,52 @@ void Map::loop()
 	glLoadIdentity();
 	m_camera.look();
 
-				for(int i = 0; i< tab.size()-1 ; ++i)
+				for(int i = 0; i< (tab.size()/2)-1 ; ++i)
 				{
-					for(int y= 0; y < tab[y].size()-1 ; ++y )
+					for(int y= 0; y < tab[1].size()-1 ; ++y )
 					{
 					glBegin(GL_TRIANGLE_FAN);
 					glColor3ub((tab[i][y]/m_max.z)*200,(tab[i][y]/m_max.z)*200,(tab[i][y]/m_max.z)*200);
-					glVertex3d(i,y,-tab[i][y]/10);
+					glVertex3d(i,y,-tab[i][y]/5);
 					glColor3ub((tab[i+1][y]/m_max.z)*25,(tab[i+1][y]/m_max.z)*255,(tab[i+1][y]/m_max.z)*255);
-					glVertex3d(i+1,y,-tab[i+1][y]/10);
-					glColor3ub((tab[i+1][y+1]/m_max.z)*55,(tab[i+1][y+1]/m_max.z)*255,(tab[i+1][y+1]/m_max.z)*255);
-					glVertex3d(i+1,y+1,-tab[i+1][y+1]/10);
-					glColor3ub((tab[i][y+1]/m_max.z)*25,(tab[i][y+1]/m_max.z)*255,(tab[i][y+1]/m_max.z)*255);
-					glVertex3d(i,y+1,-tab[i][y+1]/10);
+					glVertex3d(i+1,y,-tab[i+1][y]/5);
+					glColor3ub((tab[i+1][y+1]/m_max.z)*55,(tab[i+1][y+1]/m_max.z)*0,(tab[i+1][y+1]/m_max.z)*125);
+					glVertex3d(i+1,y+1,-tab[i+1][y+1]/5);
+					glColor3ub((tab[i][y+1]/m_max.z)*25,(tab[i][y+1]/m_max.z)*25,(tab[i][y+1]/m_max.z)*255);
+					glVertex3d(i,y+1,-tab[i][y+1]/5);
 					glEnd();
 					}
 				}
 				
 				
 
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D,txHerbe);
 				glBegin(GL_QUADS);
-				glColor3ub(0,255,255);
-				glVertex3d(-200,0,0);
-				glVertex3d(200+tab.size(),0,0);
-				glVertex3d(200+tab.size(),-200,0);
-				glVertex3d(-200,-200,0);
-
-				glVertex3d(-200,0,0);
-				glVertex3d(-200,200+tab[1].size(),0);
-				glVertex3d(0,200+tab[1].size(),0);
-				glVertex3d(0,0,0);
-
-				glVertex3d(0,tab[1].size()-1,0);
-				glVertex3d(0,tab[1].size()+200,0);
-				glVertex3d(tab.size()+200,tab[1].size()+200,0);
-				glVertex3d(tab.size()+200,tab[1].size()-1,0);
+				glColor3ub(255,255,255);
 
 
-				glVertex3d(tab.size()+200,tab[1].size(),0);
-				glVertex3d(tab.size()+200,0,0);
-				glVertex3d(tab.size(),0,0);
-				glVertex3d(tab.size(),tab.size(),0);
-				glEnd(); 
+				glTexCoord2d(0,0);			glVertex3d(-200,-200,0);
+				glTexCoord2d(0,2000);			glVertex3d(-200,0,0); 
+				glTexCoord2d(10*(400+tab.size()),2000);	glVertex3d(200+tab.size(),0,0);
+				glTexCoord2d(10*(400+tab.size()),0);	glVertex3d(200+tab.size(),-200,0);
+
+				glTexCoord2f(0,0);			glVertex3d(-200,0,0);
+				glTexCoord2f(0,10*(200+tab[1].size()));	glVertex3d(-200,200+tab[1].size(),0);
+				glTexCoord2f(2000,10*(200+tab[1].size()));glVertex3d(0,200+tab[1].size(),0);
+				glTexCoord2f(2000,0);			glVertex3d(0,0,0);
+
+				glTexCoord2d(0,0);			glVertex3d(0,tab[1].size()-1,0);
+				glTexCoord2d(0,10*(tab[1].size()+200));	glVertex3d(0,tab[1].size()+200,0);
+				glTexCoord2d(10*(200+tab.size()),10*(200*tab[1].size()));glVertex3d(tab.size()+200,tab[1].size()+200,0);
+				glTexCoord2d(10*(200+tab.size()),0);	glVertex3d(tab.size()+200,tab[1].size()-1,0);
 				
+				glTexCoord2d(0,0);			glVertex3d(-1+tab.size()/2,0,0);
+				glTexCoord2d(2010,0);			glVertex3d(tab.size()+200,0,0);
+				glTexCoord2d(2010,10*tab[1].size());	glVertex3d(tab.size()+200,tab[1].size()-1,0);
+				glTexCoord2d(0,10*tab[1].size());	glVertex3d(-1+tab.size()/2,tab[1].size()-1,0);
+				glEnd(); 
+				glDisable(GL_TEXTURE_2D);	
 				/*glEnable(GL_TEXTURE_2D);
 				glDisable(GL_DEPTH_TEST);
 				glDisable(GL_BLEND);
