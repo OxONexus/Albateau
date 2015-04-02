@@ -11,7 +11,7 @@
 class FreeFlyCamera
 {
 public:
-    FreeFlyCamera(const Vector3D & position = Vector3D(0,0,0));
+    FreeFlyCamera(const Vector3D & position = Vector3D(17.7226,-23.2571,17.756));
     virtual ~FreeFlyCamera();
 
     void update(const sf::Event& input, float timestep);

@@ -75,6 +75,8 @@ void FreeFlyCamera::VectorsFromAngles()
   gluLookAt(_position.X,_position.Y,_position.Z,
   _target.X,_target.Y,_target.Z,
   0.f, 0.f, 1.f);
+
+  std::cout <<_position.X << " " << _position.Y << " " << _position.Z << " " << _target.X << " " << _target.Y << "" << _target.Z << std::endl ;
 }
 
 FreeFlyCamera::~FreeFlyCamera()
